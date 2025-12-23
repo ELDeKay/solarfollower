@@ -58,12 +58,6 @@
       padding: 10px;
     }
 
-          .tile {
-        height: 180px;
-        font-size: 22px;
-      }
-    }
-
     @media (max-width: 480px) {
       .grid {
         grid-template-columns: 1fr;
@@ -72,6 +66,35 @@
       .tile {
         height: 200px;
         font-size: 24px;
+      }
+    }
+
+    /* Quer-/Hochformat Hinweis */
+    @media screen and (orientation: portrait) {
+      .grid {
+        display: none;
+      }
+
+      body::before {
+        content: "Bitte drehen Sie Ihr Gerät ins Querformat, um das Dashboard zu verwenden.";
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100%;
+        text-align: center;
+        font-size: 24px;
+        color: #000;
+        background: #f0f0f0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+    }
+
+    @media screen and (orientation: landscape) {
+      body::before {
+        content: "";
+        display: none;
       }
     }
   </style>
