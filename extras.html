@@ -11,18 +11,15 @@
       margin: 0;
       padding: 20px;
     }
-
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
     }
-
     .topbar h1 {
       margin: 0;
     }
-
     .back-btn {
       text-decoration: none;
       background: #007BFF;
@@ -31,7 +28,6 @@
       border-radius: 10px;
       font-weight: bold;
     }
-
     .box {
       max-width: 600px;
       margin: 0 auto;
@@ -40,14 +36,12 @@
       padding: 30px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-
     .checkbox-row {
       display: flex;
       align-items: center;
       font-size: 20px;
       gap: 15px;
     }
-
     input[type="checkbox"] {
       width: 24px;
       height: 24px;
@@ -70,21 +64,24 @@
   </div>
 
   <script>
+    const checkbox = document.getElementById("stormMode");
+    const API_BASE = "https://solar-backend-ljck.onrender.com";
+
     checkbox.addEventListener("change", async () => {
-  const status = checkbox.checked ? 1 : 0;
+      const status = checkbox.checked; // true/false
 
-  try {
-    await fetch("https://solar-backend-ljck.onrender.com/api/sturmmodus", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aktiv: status })
+      try {
+        const response = await fetch(`${API_BASE}/api/sturmmodus`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aktiv: status })
+        });
+        const data = await response.json();
+        console.log("Sturmmodus gesetzt:", data.sturmmodus);
+      } catch (e) {
+        console.log("Backend nicht erreichbar");
+      }
     });
-    console.log("Sturmmodus gesetzt:", status);
-  } catch (e) {
-    console.log("Backend nicht erreichbar");
-  }
-});
-
   </script>
 
 </body>
