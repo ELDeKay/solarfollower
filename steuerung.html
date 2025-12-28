@@ -189,41 +189,60 @@
   </div>
 
   <script>
-    const API_BASE = "https://solar-backend-ljck.onrender.com";
+const API_BASE = "https://solar-backend-ljck.onrender.com";
 
-    const checkbox = document.getElementById("stormMode");
-    const motor1Manual = document.getElementById("motor1-manual");
-    const motor2Manual = document.getElementById("motor2-manual");
+const checkbox = document.getElementById("stormMode");
+const motor1Manual = document.getElementById("motor1-manual");
+const motor2Manual = document.getElementById("motor2-manual");
 
-    checkbox.addEventListener("change", async () => {
-      const aktiv = checkbox.checked;
+checkbox.addEventListener("change", async () => {
+  const aktiv = checkbox.checked;
 
-      motor1Manual.style.display = aktiv ? "block" : "none";
-      motor2Manual.style.display = aktiv ? "block" : "none";
+  motor1Manual.style.display = aktiv ? "block" : "none";
+  motor2Manual.style.display = aktiv ? "block" : "none";
 
-      try {
-        await fetch(`${API_BASE}/api/sturmmodus`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ aktiv })
-        });
-      } catch {
-        console.log("Backend nicht erreichbar");
-      }
+  try {
+    await fetch(`${API_BASE}/api/sturmmodus`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aktiv })
     });
+  } catch {
+    console.log("Backend nicht erreichbar");
+  }
+});
 
-    function motorPlus(motor) {
-      const input = document.getElementById(`motor${motor}-target`);
-      const value = parseInt(input.value) || 0;
-      input.value = value + 1;
-    }
+function motorPlus(motor) {
+  const input = document.getElementById(`motor${motor}-target`);
+  const currentSpan = document.getElementById(`motor${motor}-current`);
 
-    function motorMinus(motor) {
-      const input = document.getElementById(`motor${motor}-target`);
-      const value = parseInt(input.value) || 0;
-      input.value = value - 1;
-    }
-  </script>
+  // aktuellen Wert auslesen
+  let currentValue = parseInt(currentSpan.innerText) || 0;
+  let inputValue = parseInt(input.value);
 
+  if (isNaN(inputValue)) {
+    // Wenn noch kein Wert im Input steht, starte beim aktuellen Wert
+    inputValue = currentValue;
+  }
+
+  input.value = inputValue + 1;
+}
+
+function motorMinus(motor) {
+  const input = document.getElementById(`motor${motor}-target`);
+  const currentSpan = document.getElementById(`motor${motor}-current`);
+
+  // aktuellen Wert auslesen
+  let currentValue = parseInt(currentSpan.innerText) || 0;
+  let inputValue = parseInt(input.value);
+
+  if (isNaN(inputValue)) {
+    // Wenn noch kein Wert im Input steht, starte beim aktuellen Wert
+    inputValue = currentValue;
+  }
+
+  input.value = inputValue - 1;
+}
+</script>
 </body>
 </html>
