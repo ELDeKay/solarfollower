@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wetterdaten</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -43,7 +44,7 @@
 
     .row {
       display: grid;
-      grid-template-columns: 80px 1fr 120px;
+      grid-template-columns: 80px 1fr 140px;
       align-items: center;
       padding: 15px 0;
       border-bottom: 1px solid #e0e0e0;
@@ -77,13 +78,16 @@
     }
   </style>
 </head>
+
 <body>
 
+  <!-- Kopfzeile -->
   <div class="topbar">
     <h1>Wetterdaten</h1>
     <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
   </div>
 
+  <!-- Datenliste -->
   <div class="list">
 
     <div class="row">
@@ -98,21 +102,45 @@
       <div class="value" id="wind">-- m/s</div>
     </div>
 
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Leistung</div>
+      <div class="value" id="watt">-- W</div>
+    </div>
+
   </div>
 
+  <!-- JavaScript -->
   <script>
+    const USER_ID = "kunde_A"; 
+    const API_BASE = "https://solar-backend.onrender.com";
+
     async function ladeWetterdaten() {
       try {
-        // Beispiel-Endpunkt des Pico (Adresse später anpassen)
-        const response = await fetch("http://PICO_IP/wetter");
-        const data = await response.json();
+        const response = await fetch(
+          `${API_BASE}/api/data/${USER_ID}`
+        );
+        const daten = await response.json();
 
-        document.getElementById("temp").innerText = data.temperatur + " °C";
-        document.getElementById("tilt").innerText = data.neigung + " °";
-        document.getElementById("wind").innerText = data.wind + " m/s";
-        document.getElementById("orientation").innerText = data.ausrichtung + " °";
+        if (daten.length === 0) {
+          console.log("Noch keine Daten vorhanden");
+          return;
+        }
+
+        // letzten Messwert nehmen
+        const letzterWert = daten[daten.length - 1];
+
+        document.getElementById("temp").innerText =
+          letzterWert.temperatur + " °C";
+
+        document.getElementById("wind").innerText =
+          letzterWert.wind + " m/s";
+
+        document.getElementById("watt").innerText =
+          letzterWert.watt + " W";
+
       } catch (e) {
-        console.log("Keine Verbindung zum Pico");
+        console.log("Backend nicht erreichbar");
       }
     }
 
