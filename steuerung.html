@@ -197,6 +197,7 @@ const motor2 = document.getElementById("motor2");
 const motor1Current = document.getElementById("motor1-current");
 const motor2Current = document.getElementById("motor2-current");
 
+
 /* Backend-Daten laden */
 async function ladeWetterdaten() {
   try {
@@ -207,10 +208,14 @@ async function ladeWetterdaten() {
 
     const letzterWert = daten[daten.length - 1];
 
+    // Checkbox setzen
     checkbox.checked = letzterWert.manuell;
-    motor1.innerText = `${letzterWert.motor1} °`;
-    motor2.innerText = `${letzterWert.motor2} °`;
 
+    // Aktuelle Werte in den <span> setzen
+    motor1Current.innerText = letzterWert.motor1 !== undefined ? `${letzterWert.motor1} °` : "-- °";
+    motor2Current.innerText = letzterWert.motor2 !== undefined ? `${letzterWert.motor2} °` : "-- °";
+
+    // Sichtbarkeit der manuellen Steuerung
     motor1.style.display = checkbox.checked ? "block" : "none";
     motor2.style.display = checkbox.checked ? "block" : "none";
 
