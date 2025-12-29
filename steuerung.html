@@ -208,8 +208,8 @@ async function ladeWetterdaten() {
     const letzterWert = daten[daten.length - 1];
 
     checkbox.checked = letzterWert.manuell;
-    motor1Current.innerText = `${letzterWert.motor1} °`;
-    motor2Current.innerText = `${letzterWert.motor2} °`;
+    motor1.innerText = `${letzterWert.motor1} °`;
+    motor2.innerText = `${letzterWert.motor2} °`;
 
     motor1.style.display = checkbox.checked ? "block" : "none";
     motor2.style.display = checkbox.checked ? "block" : "none";
