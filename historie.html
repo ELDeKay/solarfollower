@@ -32,13 +32,81 @@
       font-weight: bold;
     }
 
-    #wattChartContainer {
+    .list {
       max-width: 800px;
       margin: 0 auto;
       background: white;
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 80px 1fr 160px;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      background: #ccc;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .value {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    /* Canvas für Graph */
+    #wattChartContainer {
+      max-width: 800px;
+      margin: 0 auto 40px auto;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Buttons */
+    #chartButtons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #chartButtons button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #chartButtons button.active {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -47,6 +115,43 @@
   <div class="topbar">
     <h1>Analyse</h1>
     <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
+  </div>
+
+  <div class="list">
+    <!-- Hier deine alten Anzeigefelder -->
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Durchschnittl. Leistung</div>
+      <div class="value">XX,XX Watt</div>
+    </div>
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Leistung 24h</div>
+      <div class="value">XX,XX Watt</div>
+    </div>
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Leistung 7d</div>
+      <div class="value">XX,XX Watt</div>
+    </div>
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Leistung 30d</div>
+      <div class="value">XX,XX Watt</div>
+    </div>
+    <div class="row">
+      <div class="icon">Bild</div>
+      <div class="name">Sonnenstunden h</div>
+      <div class="value">XX,XX h</div>
+    </div>
+  </div>
+
+  <!-- Buttons zur Auswahl des Graphen -->
+  <div id="chartButtons">
+    <button data-range="24h" class="active">24h</button>
+    <button data-range="7d">7d</button>
+    <button data-range="30d">30d</button>
+    <button data-range="12m">12 Monate</button>
   </div>
 
   <!-- Graph-Container -->
@@ -58,46 +163,74 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    // ----- 12 simulierte Datenpunkte, 1 Stunde Abstand -----
-    const daten = [];
-    const now = new Date();
-    for(let i = 11; i >= 0; i--) {
-      const zeit = new Date(now.getTime() - i*60*60*1000); // stündlich
-      const watt = Math.floor(Math.random() * 95) + 5; // 5-100 W
-      daten.push({ zeit: zeit.toISOString().slice(11,16), watt }); // nur hh:mm
+    const API_BASE = "https://solarfollower.databank.onrender.com"; // Backend URL
+    let currentChart;
+
+    async function ladeWattDaten(range) {
+      try {
+        // Endpunkt abhängig vom Button
+        let endpoint;
+        switch(range) {
+          case "24h": endpoint = "/api/watt_24h"; break;
+          case "7d":  endpoint = "/api/watt_7d"; break;
+          case "30d": endpoint = "/api/watt_30d"; break;
+          case "12m": endpoint = "/api/watt_12monate"; break;
+        }
+
+        const response = await fetch(`${API_BASE}${endpoint}`);
+        const daten = await response.json();
+
+        const labels = daten.map(e => e.zeit);
+        const wattData = daten.map(e => e.watt);
+
+        const ctx = document.getElementById("wattChart").getContext("2d");
+
+        // alten Chart löschen
+        if(currentChart) currentChart.destroy();
+
+        currentChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "Leistung (Watt)",
+              data: wattData,
+              borderColor: "blue",
+              backgroundColor: "rgba(0,0,255,0.1)",
+              fill: true,
+              tension: 0.2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true },
+              title: { display: true, text: `Watt-Verlauf (${range})` }
+            },
+            scales: {
+              x: { display: true, title: { display: true, text: 'Zeit' } },
+              y: { display: true, title: { display: true, text: 'Watt' } }
+            }
+          }
+        });
+
+      } catch (e) {
+        console.error("Backend nicht erreichbar", e);
+      }
     }
 
-    // Labels und Daten
-    const labels = daten.map(e => e.zeit);
-    const wattData = daten.map(e => e.watt);
-
-    // Chart erstellen
-    const ctx = document.getElementById("wattChart").getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "Leistung (Watt)",
-          data: wattData,
-          borderColor: "blue",
-          backgroundColor: "rgba(0,0,255,0.1)",
-          fill: true,
-          tension: 0.2
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true },
-          title: { display: true, text: 'Simulierter Watt-Verlauf (12h)' }
-        },
-        scales: {
-          x: { display: true, title: { display: true, text: 'Uhrzeit' } },
-          y: { display: true, title: { display: true, text: 'Watt' }, min: 0, max: 120 }
-        }
-      }
+    // Buttons anklickbar machen
+    const buttons = document.querySelectorAll("#chartButtons button");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        ladeWattDaten(btn.dataset.range);
+      });
     });
+
+    // initialer Graph 24h
+    ladeWattDaten("24h");
   </script>
 
 </body>
