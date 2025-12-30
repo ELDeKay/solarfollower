@@ -32,55 +32,9 @@
       font-weight: bold;
     }
 
-    .list {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      margin-bottom: 40px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 80px 1fr 160px;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .row:last-child {
-      border-bottom: none;
-    }
-
-    .icon {
-      width: 60px;
-      height: 60px;
-      background: #ccc;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      color: #555;
-    }
-
-    .name {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .value {
-      font-size: 20px;
-      font-weight: bold;
-      text-align: right;
-    }
-
-    /* Canvas für Graph */
     #wattChartContainer {
       max-width: 800px;
-      margin: 0 auto 40px auto;
+      margin: 0 auto;
       background: white;
       border-radius: 16px;
       padding: 20px;
@@ -95,38 +49,6 @@
     <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
   </div>
 
-  <div class="list">
-    <div class="row">
-      <div class="icon">Bild</div>
-      <div class="name">Durchschnittl. Leistung</div>
-      <div class="value">XX,XX Watt</div>
-    </div>
-
-    <div class="row">
-      <div class="icon">Bild</div>
-      <div class="name">Leistung 24h</div>
-      <div class="value">XX,XX Watt</div>
-    </div>
-
-    <div class="row">
-      <div class="icon">Bild</div>
-      <div class="name">Leistung 7d</div>
-      <div class="value">XX,XX Watt</div>
-    </div>
-
-    <div class="row">
-      <div class="icon">Bild</div>
-      <div class="name">Leistung 30d</div>
-      <div class="value">XX,XX Watt</div>
-    </div>
-
-    <div class="row">
-      <div class="icon">Bild</div>
-      <div class="name">Sonnenstunden h</div>
-      <div class="value">XX,XX h</div>
-    </div>
-  </div>
-
   <!-- Graph-Container -->
   <div id="wattChartContainer">
     <canvas id="wattChart"></canvas>
@@ -136,54 +58,46 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    const API_BASE = "https://solarfollower.databank.onrender.com"; // Backend URL
-
-    async function ladeWattDaten() {
-      try {
-        const response = await fetch(`${API_BASE}/api/watt`);
-        const daten = await response.json();
-
-        const labels = daten.map(e => e.zeit);
-        const wattData = daten.map(e => e.watt);
-
-        const ctx = document.getElementById("wattChart").getContext("2d");
-
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: labels,
-            datasets: [{
-              label: "Leistung (Watt)",
-              data: wattData,
-              borderColor: "blue",
-              backgroundColor: "rgba(0,0,255,0.1)",
-              fill: true,
-              tension: 0.2
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: true },
-              title: {
-                display: true,
-                text: 'Watt-Verlauf'
-              }
-            },
-            scales: {
-              x: { display: true, title: { display: true, text: 'Zeit' } },
-              y: { display: true, title: { display: true, text: 'Watt' } }
-            }
-          }
-        });
-
-      } catch (e) {
-        console.error("Backend nicht erreichbar", e);
-      }
+    // ----- 12 simulierte Datenpunkte, 1 Stunde Abstand -----
+    const daten = [];
+    const now = new Date();
+    for(let i = 11; i >= 0; i--) {
+      const zeit = new Date(now.getTime() - i*60*60*1000); // stündlich
+      const watt = Math.floor(Math.random() * 95) + 5; // 5-100 W
+      daten.push({ zeit: zeit.toISOString().slice(11,16), watt }); // nur hh:mm
     }
 
-    // Graph initial laden
-    ladeWattDaten();
+    // Labels und Daten
+    const labels = daten.map(e => e.zeit);
+    const wattData = daten.map(e => e.watt);
+
+    // Chart erstellen
+    const ctx = document.getElementById("wattChart").getContext("2d");
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Leistung (Watt)",
+          data: wattData,
+          borderColor: "blue",
+          backgroundColor: "rgba(0,0,255,0.1)",
+          fill: true,
+          tension: 0.2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          title: { display: true, text: 'Simulierter Watt-Verlauf (12h)' }
+        },
+        scales: {
+          x: { display: true, title: { display: true, text: 'Uhrzeit' } },
+          y: { display: true, title: { display: true, text: 'Watt' }, min: 0, max: 120 }
+        }
+      }
+    });
   </script>
 
 </body>
