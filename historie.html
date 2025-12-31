@@ -77,7 +77,6 @@
       text-align: right;
     }
 
-    /* Canvas für Graph */
     #wattChartContainer {
       max-width: 800px;
       margin: 0 auto 40px auto;
@@ -87,7 +86,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Buttons */
     #chartButtons {
       display: flex;
       justify-content: center;
@@ -118,27 +116,30 @@
   </div>
 
   <div class="list">
-    <!-- Hier deine alten Anzeigefelder -->
     <div class="row">
       <div class="icon">Bild</div>
       <div class="name">Durchschnittl. Leistung</div>
       <div class="value">XX,XX Watt</div>
     </div>
+
     <div class="row">
       <div class="icon">Bild</div>
       <div class="name">Leistung 24h</div>
-      <div class="value">XX,XX Watt</div>
+      <div class="value" id="avg24h">XX,XX Watt</div>
     </div>
+
     <div class="row">
       <div class="icon">Bild</div>
       <div class="name">Leistung 7d</div>
-      <div class="value">XX,XX Watt</div>
+      <div class="value" id="avg7d">XX,XX Watt</div>
     </div>
+
     <div class="row">
       <div class="icon">Bild</div>
       <div class="name">Leistung 30d</div>
-      <div class="value">XX,XX Watt</div>
+      <div class="value" id="avg30d">XX,XX Watt</div>
     </div>
+
     <div class="row">
       <div class="icon">Bild</div>
       <div class="name">Sonnenstunden h</div>
@@ -146,7 +147,6 @@
     </div>
   </div>
 
-  <!-- Buttons zur Auswahl des Graphen -->
   <div id="chartButtons">
     <button data-range="24h" class="active">24h</button>
     <button data-range="7d">7d</button>
@@ -154,34 +154,48 @@
     <button data-range="12m">12 Monate</button>
   </div>
 
-  <!-- Graph-Container -->
   <div id="wattChartContainer">
     <canvas id="wattChart"></canvas>
   </div>
 
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-  const API_BASE = "https://solarfollower-databank.onrender.com";
-  let currentChart;
+    const API_BASE = "https://solarfollower-databank.onrender.com";
+    let currentChart;
 
-  function formatZeit(zeit, range) {
-    const d = new Date(zeit);
-    if (range === "24h") {
-      return d.getHours() + ":00";
+    function berechneDurchschnitt(daten) {
+      if (!daten.length) return "0,00 Watt";
+      const summe = daten.reduce((s, e) => s + e.watt, 0);
+      return (summe / daten.length).toFixed(2).replace(".", ",") + " Watt";
     }
-    if (range === "7d" || range === "30d") {
-      return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
-    }
-    if (range === "12m") {
-      return d.toLocaleDateString("de-DE", { month: "short", year: "numeric" });
-    }
-    return zeit;
-  }
 
-  async function ladeWattDaten(range) {
-    try {
+    async function ladeDurchschnittswerte() {
+      const map = [
+        { endpoint: "/api/watt_24h", element: "avg24h" },
+        { endpoint: "/api/watt_7d",  element: "avg7d" },
+        { endpoint: "/api/watt_30d", element: "avg30d" }
+      ];
+
+      for (const eintrag of map) {
+        const response = await fetch(`${API_BASE}${eintrag.endpoint}`);
+        const daten = await response.json();
+        document.getElementById(eintrag.element).textContent =
+          berechneDurchschnitt(daten);
+      }
+    }
+
+    function formatZeit(zeit, range) {
+      const d = new Date(zeit);
+      if (range === "24h") return d.getHours() + ":00";
+      if (range === "7d" || range === "30d")
+        return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+      if (range === "12m")
+        return d.toLocaleDateString("de-DE", { month: "short", year: "numeric" });
+      return zeit;
+    }
+
+    async function ladeWattDaten(range) {
       let endpoint;
       switch(range) {
         case "24h": endpoint = "/api/watt_24h"; break;
@@ -197,13 +211,12 @@
       const wattData = daten.map(e => e.watt);
 
       const ctx = document.getElementById("wattChart").getContext("2d");
-
       if (currentChart) currentChart.destroy();
 
       currentChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: labels,
+          labels,
           datasets: [{
             label: "Leistung (Watt)",
             data: wattData,
@@ -211,52 +224,31 @@
             backgroundColor: "rgba(0,123,255,0.15)",
             fill: true,
             tension: 0.25,
-            pointRadius: 0,
-            pointHoverRadius: 0
+            pointRadius: 0
           }]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: true },
-            title: {
-              display: true,
-              text: `Watt-Verlauf (${range})`
-            }
-          },
           scales: {
-            x: {
-              ticks: {
-                autoSkip: true,
-                maxTicksLimit: 10
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: "Watt"
-              }
-            }
+            x: { ticks: { autoSkip: true, maxTicksLimit: 10 } },
+            y: { title: { display: true, text: "Watt" } }
           }
         }
       });
-
-    } catch (e) {
-      console.error("Backend nicht erreichbar", e);
     }
-  }
 
-  const buttons = document.querySelectorAll("#chartButtons button");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      ladeWattDaten(btn.dataset.range);
+    document.querySelectorAll("#chartButtons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#chartButtons button")
+          .forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        ladeWattDaten(btn.dataset.range);
+      });
     });
-  });
 
-  ladeWattDaten("24h");
-</script>
+    ladeWattDaten("24h");
+    ladeDurchschnittswerte();
+  </script>
 
 </body>
 </html>
