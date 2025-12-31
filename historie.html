@@ -163,75 +163,100 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    const API_BASE = "https://solarfollower-databank.onrender.com"; // Backend URL
-    let currentChart;
+  const API_BASE = "https://solarfollower-databank.onrender.com";
+  let currentChart;
 
-    async function ladeWattDaten(range) {
-      try {
-        // Endpunkt abhängig vom Button
-        let endpoint;
-        switch(range) {
-          case "24h": endpoint = "/api/watt_24h"; break;
-          case "7d":  endpoint = "/api/watt_7d"; break;
-          case "30d": endpoint = "/api/watt_30d"; break;
-          case "12m": endpoint = "/api/watt_12monate"; break;
-        }
+  function formatZeit(zeit, range) {
+    const d = new Date(zeit);
+    if (range === "24h") {
+      return d.getHours() + ":00";
+    }
+    if (range === "7d" || range === "30d") {
+      return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+    }
+    if (range === "12m") {
+      return d.toLocaleDateString("de-DE", { month: "short", year: "numeric" });
+    }
+    return zeit;
+  }
 
-        const response = await fetch(`${API_BASE}${endpoint}`);
-        const daten = await response.json();
+  async function ladeWattDaten(range) {
+    try {
+      let endpoint;
+      switch(range) {
+        case "24h": endpoint = "/api/watt_24h"; break;
+        case "7d":  endpoint = "/api/watt_7d"; break;
+        case "30d": endpoint = "/api/watt_30d"; break;
+        case "12m": endpoint = "/api/watt_12monate"; break;
+      }
 
-        const labels = daten.map(e => e.zeit);
-        const wattData = daten.map(e => e.watt);
+      const response = await fetch(`${API_BASE}${endpoint}`);
+      const daten = await response.json();
 
-        const ctx = document.getElementById("wattChart").getContext("2d");
+      const labels = daten.map(e => formatZeit(e.zeit, range));
+      const wattData = daten.map(e => e.watt);
 
-        // alten Chart löschen
-        if(currentChart) currentChart.destroy();
+      const ctx = document.getElementById("wattChart").getContext("2d");
 
-        currentChart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: labels,
-            datasets: [{
-              label: "Leistung (Watt)",
-              data: wattData,
-              borderColor: "blue",
-              backgroundColor: "rgba(0,0,255,0.1)",
-              fill: true,
-              tension: 0.2
-            }]
+      if (currentChart) currentChart.destroy();
+
+      currentChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Leistung (Watt)",
+            data: wattData,
+            borderColor: "#007BFF",
+            backgroundColor: "rgba(0,123,255,0.15)",
+            fill: true,
+            tension: 0.25,
+            pointRadius: 0,
+            pointHoverRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: {
+              display: true,
+              text: `Watt-Verlauf (${range})`
+            }
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: true },
-              title: { display: true, text: `Watt-Verlauf (${range})` }
+          scales: {
+            x: {
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10
+              }
             },
-            scales: {
-              x: { display: true, title: { display: true, text: 'Zeit' } },
-              y: { display: true, title: { display: true, text: 'Watt' } }
+            y: {
+              title: {
+                display: true,
+                text: "Watt"
+              }
             }
           }
-        });
-
-      } catch (e) {
-        console.error("Backend nicht erreichbar", e);
-      }
-    }
-
-    // Buttons anklickbar machen
-    const buttons = document.querySelectorAll("#chartButtons button");
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        ladeWattDaten(btn.dataset.range);
+        }
       });
-    });
 
-    // initialer Graph 24h
-    ladeWattDaten("24h");
-  </script>
+    } catch (e) {
+      console.error("Backend nicht erreichbar", e);
+    }
+  }
+
+  const buttons = document.querySelectorAll("#chartButtons button");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      ladeWattDaten(btn.dataset.range);
+    });
+  });
+
+  ladeWattDaten("24h");
+</script>
 
 </body>
 </html>
