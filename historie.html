@@ -233,11 +233,24 @@
             backgroundColor: "rgba(0,123,255,0.15)",
             fill: true,
             tension: 0.25,
-            pointRadius: 0
+            pointRadius: 1,
+            pointHoverRadius: 3
           }]
         },
         options: {
           responsive: true,
+           plugins: {
+              tooltip: {
+                enabled: true,
+                mode: 'nearest',
+                intersect: false,
+                callbacks: {
+                label: function(context) {
+                    return context.parsed.y.toFixed(2) + " Watt";
+                                          }
+                        }
+                      }
+                  },
           scales: {
             x: { ticks: { autoSkip: true, maxTicksLimit: 10 } },
             y: { title: { display: true, text: "Watt" } }
