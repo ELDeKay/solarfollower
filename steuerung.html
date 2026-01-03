@@ -6,115 +6,131 @@
   <title>Steuerung</title>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      margin: 0;
-      padding: 20px;
-    }
+    body 
+      {
+        font-family: Arial, sans-serif;
+        background: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
+    .topbar 
+      {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
 
-    .back-btn {
-      text-decoration: none;
-      background: #007BFF;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: bold;
-    }
+    .back-btn 
+      {
+        text-decoration: none;
+        background: #007BFF;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
 
-    .motors {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .motors 
+      {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
 
-    .motor-box {
-      background: white;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      text-align: center;
-    }
+    .motor-box 
+      {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        text-align: center;
+      }
 
-    .motor-box h2 {
-      margin-bottom: 20px;
-    }
+    .motor-box h2 
+      {
+        margin-bottom: 20px;
+      }
 
-    .value-box {
-      border: 2px solid #000;
-      padding: 15px;
-      margin-bottom: 15px;
-      font-size: 18px;
-      font-weight: bold;
-    }
+    .value-box 
+      {
+        border: 2px solid #000;
+        padding: 15px;
+        margin-bottom: 15px;
+        font-size: 18px;
+        font-weight: bold;
+      }
 
-    .value-box span {
-      display: block;
-      margin-top: 5px;
-      font-size: 24px;
-    }
+    .value-box span 
+      {
+        display: block;
+        margin-top: 5px;
+        font-size: 24px;
+      }
 
     /* Eingabefelder & Buttons standardmäßig versteckt */
-    .manual-motor-controls {
-      display: none;
-    }
-
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-    }
-
-    .btn {
-      width: 60px;
-      height: 60px;
-      font-size: 32px;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      background: #007BFF;
-      color: white;
-      cursor: pointer;
-    }
-
-    .btn:active {
-      transform: scale(0.95);
-    }
-
-    .manuell-box {
-      max-width: 900px;
-      margin: 40px auto 0;
-      background: white;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 20px;
-    }
-
-    input[type="checkbox"] {
-      width: 26px;
-      height: 26px;
-      cursor: pointer;
-    }
-
-    @media (max-width: 700px) {
-      .motors {
-        grid-template-columns: 1fr;
+    .manual-motor-controls 
+      {
+        display: none;
       }
-    }
+
+
+    .controls 
+      {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+      }
+
+    .btn 
+      {
+        width: 60px;
+        height: 60px;
+        font-size: 32px;
+        font-weight: bold;
+        border: none;
+        border-radius: 12px;
+        background: #007BFF;
+        color: white;
+        cursor: pointer;
+      }
+
+    .btn:active 
+      {
+        transform: scale(0.95);
+      }
+
+    .manuell-box 
+      {
+        max-width: 900px;
+        margin: 40px auto 0;
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 20px;
+      }
+
+    input[type="checkbox"] 
+      {
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+      }
+
+    @media (max-width: 700px) 
+      {
+        .motors 
+          {
+            grid-template-columns: 1fr;
+          }
+      }
   </style>
 </head>
 
@@ -193,73 +209,85 @@ const motor2Current = document.getElementById("motor2-current");
 /* Backend-Daten laden */
 let uiInitialisiert = false;
 
-async function ladeWetterdaten() {
-  try {
-    const response = await fetch(`${API_BASE}/api/data`);
-    const daten = await response.json();
-    if (!daten.length) return;
-
-    const letzterWert = daten[daten.length - 1];
-
-    // Aktuelle Motorwerte IMMER aktualisieren
-    motor1Current.innerText =
-      letzterWert.motor1 !== undefined ? `${letzterWert.motor1} °` : "-- °";
-    motor2Current.innerText =
-      letzterWert.motor2 !== undefined ? `${letzterWert.motor2} °` : "-- °";
-
-    // UI-Zustand NUR EINMAL vom Backend übernehmen
-    if (!uiInitialisiert) {
-      checkbox.checked = !!letzterWert.manuell;
-      motor1.style.display = checkbox.checked ? "block" : "none";
-      motor2.style.display = checkbox.checked ? "block" : "none";
-      uiInitialisiert = true;
-    }
-
-  } catch {
-    console.log("Backend nicht erreichbar");
+async function ladeWetterdaten() 
+  {
+    try 
+      {
+        const response = await fetch(`${API_BASE}/api/data`);
+        const daten = await response.json();
+        if (!daten.length) return;
+    
+        const letzterWert = daten[daten.length - 1];
+    
+        // Aktuelle Motorwerte IMMER aktualisieren
+        motor1Current.innerText =
+          letzterWert.motor1 !== undefined ? `${letzterWert.motor1} °` : "-- °";
+        motor2Current.innerText =
+          letzterWert.motor2 !== undefined ? `${letzterWert.motor2} °` : "-- °";
+    
+        // UI-Zustand NUR EINMAL vom Backend übernehmen
+        if (!uiInitialisiert) 
+          {
+            checkbox.checked = !!letzterWert.manuell;
+            motor1.style.display = checkbox.checked ? "block" : "none";
+            motor2.style.display = checkbox.checked ? "block" : "none";
+            uiInitialisiert = true;
+          }
+    
+      } 
+    catch 
+      {
+        console.log("Backend nicht erreichbar");
+      }
   }
-}
 
 
 
 /* Checkbox ändern */
-checkbox.addEventListener("change", async () => {
-  const aktiv = checkbox.checked;
-
-  motor1.style.display = aktiv ? "block" : "none";
-  motor2.style.display = aktiv ? "block" : "none";
-
-  try {
-    await fetch(`${API_BASE}/api/sturmmodus`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aktiv })
-    });
-  } catch {
-    console.log("Backend nicht erreichbar");
-  }
+checkbox.addEventListener("change", async () => 
+  {
+    const aktiv = checkbox.checked;
+  
+    motor1.style.display = aktiv ? "block" : "none";
+    motor2.style.display = aktiv ? "block" : "none";
+  
+    try 
+      {
+        await fetch(`${API_BASE}/api/sturmmodus`, 
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ aktiv })
+          });
+      } 
+    catch 
+      {
+        console.log("Backend nicht erreichbar");
+      }
 });
 
 /* Buttons */
-function motorPlus(motor) {
-  const target = document.getElementById(`motor${motor}-target`);
-  const current = document.getElementById(`motor${motor}-current`);
+function motorPlus(motor) 
+  {
+    const target = document.getElementById(`motor${motor}-target`);
+    const current = document.getElementById(`motor${motor}-current`);
+  
+    let value = parseInt(target.innerText);
+    if (isNaN(value)) value = parseInt(current.innerText) || 0;
+  
+    target.innerText = (value + 1) + " °";
+  }
 
-  let value = parseInt(target.innerText);
-  if (isNaN(value)) value = parseInt(current.innerText) || 0;
-
-  target.innerText = (value + 1) + " °";
-}
-
-function motorMinus(motor) {
-  const target = document.getElementById(`motor${motor}-target`);
-  const current = document.getElementById(`motor${motor}-current`);
-
-  let value = parseInt(target.innerText);
-  if (isNaN(value)) value = parseInt(current.innerText) || 0;
-
-  target.innerText = (value - 1) + " °";
-}
+function motorMinus(motor) 
+  {
+    const target = document.getElementById(`motor${motor}-target`);
+    const current = document.getElementById(`motor${motor}-current`);
+  
+    let value = parseInt(target.innerText);
+    if (isNaN(value)) value = parseInt(current.innerText) || 0;
+  
+    target.innerText = (value - 1) + " °";
+  }
 
 
 
