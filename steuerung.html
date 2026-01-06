@@ -160,8 +160,22 @@
 
 
         <div class="controls">
-          <button class="btn" onclick="motorMinus(1)">−</button>
-          <button class="btn" onclick="motorPlus(1)">+</button>
+          <button class="btn"
+            onmousedown="startHold(1, -1)"
+            onmouseup="stopHold()"
+            onmouseleave="stopHold()"
+            ontouchstart="startHold(1, -1)"
+            ontouchend="stopHold()"
+          >−</button>
+
+          <button class="btn"
+            onmousedown="startHold(1, +1)"
+            onmouseup="stopHold()"
+            onmouseleave="stopHold()"
+            ontouchstart="startHold(1, +1)"
+            ontouchend="stopHold()"
+          >+</button>
+
         </div>
       </div>
     </div>
@@ -183,8 +197,22 @@
 
 
         <div class="controls">
-          <button class="btn" onclick="motorMinus(2)">−</button>
-          <button class="btn" onclick="motorPlus(2)">+</button>
+          <button class="btn"
+            onmousedown="startHold(1, -1)"
+            onmouseup="stopHold()"
+            onmouseleave="stopHold()"
+            ontouchstart="startHold(1, -1)"
+            ontouchend="stopHold()"
+          >−</button>
+          
+          <button class="btn"
+            onmousedown="startHold(1, +1)"
+            onmouseup="stopHold()"
+            onmouseleave="stopHold()"
+            ontouchstart="startHold(1, +1)"
+            ontouchend="stopHold()"
+          >+</button>
+
         </div>
       </div>
     </div>
@@ -301,6 +329,36 @@ function motorMinus(motor)
       }
 
     target.innerText = value + " °";
+  }
+  
+let intervalId = null;
+
+function changeMotorValue(motor, delta) 
+  {
+    const target = document.getElementById(`motor${motor}-target`);
+    const current = document.getElementById(`motor${motor}-current`);
+  
+    let value = parseInt(target.innerText);
+    if (isNaN(value)) value = parseInt(current.innerText) || 0;
+  
+    const { min, max } = MOTOR_LIMITS[motor];
+    value = Math.min(max, Math.max(min, value + delta));
+  
+    target.innerText = value + " °";
+  }
+
+function startHold(motor, delta) 
+  {
+    changeMotorValue(motor, delta); // sofort reagieren
+    intervalId = setInterval(() => {
+      changeMotorValue(motor, delta);
+    }, 120);
+  }
+
+function stopHold() 
+  {
+    clearInterval(intervalId);
+    intervalId = null;
   }
 
 
