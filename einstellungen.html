@@ -128,7 +128,7 @@
 
     <div class="checkbox-row">
       <span>Daten überliefern</span>
-      <input type="checkbox" id="sendData">
+      <input type="checkbox" id="coorsdcheck">
     </div>
 
     <div class="status" id="statusText">
@@ -141,7 +141,7 @@ const API_BASE = "https://solar-backend-ljck.onrender.com"; // ggf. anpassen
 
 const latitudeInput = document.getElementById("latitude");
 const longitudeInput = document.getElementById("longitude");
-const checkbox = document.getElementById("sendData");
+const checkbox = document.getElementById("coordscheck");
 const statusText = document.getElementById("statusText");
 
 checkbox.addEventListener("change", async () =>
@@ -187,3 +187,4 @@ checkbox.addEventListener("change", async () =>
 
 </body>
 </html>
+
