@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Einstellungen</title>
+
+  <style>
+    body
+      {
+        font-family: Arial, sans-serif;
+        background: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+
+    .topbar
+      {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+    .back-btn
+      {
+        text-decoration: none;
+        background: #007BFF;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+
+    .box
+      {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+
+    .box h2
+      {
+        margin-top: 0;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+    .field
+      {
+        margin-bottom: 20px;
+      }
+
+    .field label
+      {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+      }
+
+    .field input[type="number"]
+      {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+    .checkbox-row
+      {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 30px;
+        font-size: 18px;
+      }
+
+    .checkbox-row input[type="checkbox"]
+      {
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+      }
+
+    .status
+      {
+        margin-top: 20px;
+        font-size: 14px;
+        text-align: center;
+        color: #555;
+      }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <h1>Einstellungen</h1>
+    <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
+  </div>
+
+  <div class="box">
+    <h2>Standortdaten</h2>
+
+    <div class="field">
+      <label for="latitude">Breitengrad (Latitude)</label>
+      <input
+        type="number"
+        id="latitude"
+        step="0.000001"
+        placeholder="z. B. 48.137154"
+      />
+    </div>
+
+    <div class="field">
+      <label for="longitude">Längengrad (Longitude)</label>
+      <input
+        type="number"
+        id="longitude"
+        step="0.000001"
+        placeholder="z. B. 11.576124"
+      />
+    </div>
+
+    <div class="checkbox-row">
+      <span>Daten überliefern</span>
+      <input type="checkbox" id="sendData">
+    </div>
+
+    <div class="status" id="statusText">
+      Daten werden nicht übertragen
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://solar-backend-ljck.onrender.com"; // ggf. anpassen
+
+const latitudeInput = document.getElementById("latitude");
+const longitudeInput = document.getElementById("longitude");
+const checkbox = document.getElementById("sendData");
+const statusText = document.getElementById("statusText");
+
+checkbox.addEventListener("change", async () =>
+  {
+    if (!checkbox.checked)
+      {
+        statusText.innerText = "Daten werden nicht übertragen";
+        return;
+      }
+
+    const latitude = parseFloat(latitudeInput.value);
+    const longitude = parseFloat(longitudeInput.value);
+
+    if (isNaN(latitude) || isNaN(longitude))
+      {
+        alert("Bitte gültige Koordinaten eingeben");
+        checkbox.checked = false;
+        return;
+      }
+
+    try
+      {
+        await fetch(`${API_BASE}/api/koordinaten`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              {
+                latitude,
+                longitude
+              })
+          });
+
+        statusText.innerText = "Koordinaten wurden an den Pico gesendet";
+      }
+    catch
+      {
+        statusText.innerText = "Übertragung fehlgeschlagen";
+        checkbox.checked = false;
+      }
+  });
+</script>
+
+</body>
+</html>
