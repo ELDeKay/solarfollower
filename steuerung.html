@@ -149,7 +149,7 @@
 
       <div class="value-box">
         aktueller Wert
-        <span id="motor1">-- °</span>
+        <span id="motor1-current">-- °</span>
       </div>
 
       <div class="manual-motor-controls" id="motor1">
@@ -186,7 +186,7 @@
 
       <div class="value-box">
         aktueller Wert
-        <span id="motor2">-- °</span>
+        <span id="motor2-current">-- °</span>
       </div>
 
       <div class="manual-motor-controls" id="motor2">
@@ -228,10 +228,10 @@
 const API_BASE = "https://solar-backend-ljck.onrender.com";
 
 const checkbox = document.getElementById("manuell");
-const motor1 = document.getElementById("motor1");
-const motor2 = document.getElementById("motor2");
-const motor1Current = document.getElementById("motor1_target");
-const motor2Current = document.getElementById("motor2_target");
+const motor1_strg = document.getElementById("motor1");
+const motor2_strg = document.getElementById("motor2");
+const motor1Current = document.getElementById("motor1-current");
+const motor2Current = document.getElementById("motor2-current");
 
 const MOTOR_LIMITS = {
   1: { min: 0,  max: 300 },
@@ -251,16 +251,16 @@ async function ladeWetterdaten()
 
     const letzterWert = daten[daten.length - 1];
 
-    motor1.innerText =
+    motor1Current.innerText =
       letzterWert.motor1 !== undefined ? `${letzterWert.motor1} °` : "-- °";
 
-    motor2.innerText =
+    motor2Current.innerText =
       letzterWert.motor2 !== undefined ? `${letzterWert.motor2} °` : "-- °";
 
     if (!uiInitialisiert) {
       checkbox.checked = !!letzterWert.manuell;
-      motor1.style.display = checkbox.checked ? "block" : "none";
-      motor2.style.display = checkbox.checked ? "block" : "none";
+      motor1_strg.style.display = checkbox.checked ? "block" : "none";
+      motor2_strg.style.display = checkbox.checked ? "block" : "none";
       uiInitialisiert = true;
     }
   }
@@ -275,8 +275,8 @@ checkbox.addEventListener("change", async () =>
 {
   const manuell = checkbox.checked;
 
-  motor1.style.display = manuell ? "block" : "none";
-  motor2.style.display = manuell ? "block" : "none";
+  motor1_strg.style.display = manuell ? "block" : "none";
+  motor2_strg.style.display = manuell ? "block" : "none";
 
   try {
     await fetch(`${API_BASE}/api/sturmmodus`, {
@@ -294,8 +294,8 @@ checkbox.addEventListener("change", async () =>
 
 async function sendMotorTargets()
 {
-  const m1 = parseInt(document.getElementById("motor1_target").innerText);
-  const m2 = parseInt(document.getElementById("motor2_target").innerText);
+  const m1 = parseInt(document.getElementById("motor1-target").innerText);
+  const m2 = parseInt(document.getElementById("motor2-target").innerText);
 
   if (isNaN(m1) || isNaN(m2)) return;
 
