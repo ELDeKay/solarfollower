@@ -153,12 +153,25 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* ✅ Mobile Optimierung */
-    @media (max-width: 600px) {
-      body {
-        padding: 14px;
-        padding-bottom: calc(14px + env(safe-area-inset-bottom));
-        align-items: stretch;
+          /* 📱 Mobile Portrait */
+      @media (max-width: 600px) {
+        #wattChartContainer {
+          height: 420px;   /* vorher ~320 */
+        }
+      }
+      
+      /* 📱 Mobile Landscape */
+      @media (min-width: 601px) and (max-width: 900px) {
+        #wattChartContainer {
+          height: 500px;
+        }
+      }
+      
+      /* 🖥️ Desktop */
+      @media (min-width: 901px) {
+        #wattChartContainer {
+          height: 560px;
+        }
       }
 
       .topbar {
