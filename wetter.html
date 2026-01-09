@@ -15,15 +15,18 @@
     }
 
     .topbar {
+      position: relative;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
-      gap: 12px;
     }
 
     .topbar h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       margin: 0;
+      text-align: center;
     }
 
     .back-btn {
@@ -33,6 +36,7 @@
       padding: 10px 16px;
       border-radius: 10px;
       font-weight: bold;
+      margin-left: auto;
     }
 
     .list {
