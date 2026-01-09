@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Anleitung</title>
+
+  <style>
+    /* ✅ Kein horizontales Overflow */
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ✅ gleiche Breite wie deine anderen Seiten */
+    .topbar,
+    .content {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* ✅ Desktop: Titel exakt mittig, Button rechts */
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .topbar h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      text-align: center;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      background: #007BFF;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+
+      margin-left: auto;
+      display: inline-block;
+      touch-action: manipulation;
+    }
+
+    /* ✅ Inhalt-Karte (optional, aber sinnvoll für Anleitungstext) */
+    .content {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      line-height: 1.55;
+    }
+
+    .content h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+    }
+
+    .content p {
+      margin: 0 0 12px 0;
+    }
+
+    .content ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    /* ✅ Mobile */
+    @media (max-width: 600px) {
+      body {
+        padding: 14px;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom));
+        align-items: stretch;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .topbar h1 {
+        position: static;
+        transform: none;
+        text-align: center;
+        order: 1;
+      }
+
+      .back-btn {
+        width: 100%;
+        text-align: center;
+        order: 2;
+        margin-left: 0;
+      }
+
+      .content {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <h1>Anleitung</h1>
+    <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
+  </div>
+
+  <div class="content">
+    <h2>So benutzt du das System</h2>
+    <p>Hier kannst du deine Anleitung einfügen. Beispiel:</p>
+    <ul>
+      <li>Öffne im Hauptmenü die gewünschte Seite.</li>
+      <li>Aktiviere bei Bedarf die manuelle Steuerung.</li>
+      <li>Überprüfe aktuelle Werte unter „Paneeldaten“ und „Wetterdaten“.</li>
+      <li>Für Auswertungen nutze „Analyse“.</li>
+    </ul>
+    <p>Du kannst diesen Text frei ersetzen oder erweitern.</p>
+  </div>
+</body>
+</html>
