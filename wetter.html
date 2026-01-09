@@ -7,92 +7,132 @@
   <title>Wetterdaten</title>
 
   <style>
-    body 
-      {
-        font-family: Arial, sans-serif;
-        background: #f0f0f0;
-        margin: 0;
-        padding: 20px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 12px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      background: #007BFF;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .list {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+      gap: 12px;
+      min-height: 72px;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .icon {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* 🔥 Wert + Einheit sauber gruppiert */
+    .value {
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 20px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .unit {
+      font-size: 14px;
+      font-weight: normal;
+      color: #666;
+    }
+
+    /* 📱 Mobile Optimierung */
+    @media (max-width: 600px) {
+      body {
+        padding: 14px;
       }
 
-    .topbar 
-      {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 18px;
       }
 
-    .topbar h1 
-      {
-        margin: 0;
+      .back-btn {
+        width: 100%;
+        text-align: center;
       }
 
-    .back-btn 
-      {
-        text-decoration: none;
-        background: #007BFF;
-        color: white;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-weight: bold;
+      .list {
+        padding: 16px;
       }
 
-    .list 
-      {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      .row {
+        grid-template-columns: 56px 1fr auto;
+        padding: 12px 0;
       }
 
-    .row 
-      {
-        display: grid;
-        grid-template-columns: 120px 1fr 140px;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #e0e0e0;
+      .icon {
+        width: 44px;
+        height: 44px;
       }
 
-    .row:last-child 
-      {
-        border-bottom: none;
+      .name {
+        font-size: 16px;
       }
 
-    .icon 
-      {
-        width: 100px;
-        height: 100px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-        color: #555;
-      }
-    
-   .icon img 
-      {
-        width: 100%;          /* Bild füllt Block gut aus */
-        height: 100%;
-        object-fit: contain;
-      }
-    
-    .name 
-      {
+      .value {
         font-size: 18px;
-        font-weight: bold;
       }
-
-    .value 
-      {
-        font-size: 20px;
-        font-weight: bold;
-        text-align: right;
-      }
+    }
   </style>
 </head>
 
@@ -106,37 +146,49 @@
 
   <!-- Datenliste -->
   <div class="list">
-    
-    <div class="row">
-      <div class="icon">
-        <img src="windspeed.png"></div>
-      <div class="name">Windstärke</div>
-      <div class="value" id="wind">-- m/s</div>
 
-      
-    </div>
-      <div class="row">
-        <div class="icon">
-          <img src="sunrise.png">
-        </div>
-      <div class="name">Sonnenaufgang</div>
-      <div class="value" id="sunrise">-- Uhr</div>
-      </div>
-    
     <div class="row">
       <div class="icon">
-        <img src="sunset.png">
+        <img src="windspeed.png" alt="Wind">
+      </div>
+      <div class="name">Windstärke</div>
+      <div class="value">
+        <span id="wind">--</span>
+        <span class="unit">m/s</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="icon">
+        <img src="sunrise.png" alt="Sonnenaufgang">
+      </div>
+      <div class="name">Sonnenaufgang</div>
+      <div class="value">
+        <span id="sunrise">--</span>
+        <span class="unit">Uhr</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="icon">
+        <img src="sunset.png" alt="Sonnenuntergang">
       </div>
       <div class="name">Sonnenuntergang</div>
-      <div class="value" id="sunset">-- Uhr</div>
+      <div class="value">
+        <span id="sunset">--</span>
+        <span class="unit">Uhr</span>
+      </div>
     </div>
 
     <div class="row">
       <div class="icon">
-        <img src="sunhours.png">
+        <img src="sunhours.png" alt="Sonnenstunden">
       </div>
-      <div class="name">Sonnenstunden (Anzahl)</div>
-      <div class="value" id="sunhours">-- h</div>
+      <div class="name">Sonnenstunden</div>
+      <div class="value">
+        <span id="sunhours">--</span>
+        <span class="unit">h</span>
+      </div>
     </div>
 
   </div>
