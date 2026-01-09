@@ -6,7 +6,6 @@
   <title>Analyse</title>
 
   <style>
-    /* ✅ Kein horizontales Overflow */
     *,
     *::before,
     *::after { box-sizing: border-box; }
@@ -25,7 +24,7 @@
       align-items: center;
     }
 
-    /* ✅ Einheitliche Seitenbreite */
+    /* Einheitliche Seitenbreite */
     .topbar,
     .list,
     #chartButtons,
@@ -34,7 +33,7 @@
       max-width: 800px;
     }
 
-    /* ✅ Topbar: Desktop Titel exakt mittig, Button rechts */
+    /* Topbar: Desktop Titel mittig, Button rechts */
     .topbar {
       position: relative;
       display: flex;
@@ -107,7 +106,7 @@
       white-space: nowrap;
     }
 
-    /* ✅ Buttons: schön platziert, aber NICHT riesig */
+    /* Buttons */
     #chartButtons {
       display: flex;
       justify-content: center;
@@ -124,18 +123,12 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-
-      /* ✅ verhindert “Mega-Buttons” */
-      flex: 0 1 auto;
-      min-width: 92px;
-      max-width: 180px;
-
       touch-action: manipulation;
     }
 
     #chartButtons button.active { background-color: #0056b3; }
 
-    /* ✅ Chart-Container: Größe über clamp + vh -> auf jedem Gerät groß genug */
+    /* ✅ Chart-Container: jetzt wirklich groß (PC) */
     #wattChartContainer {
       background: white;
       border-radius: 16px;
@@ -143,11 +136,17 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       margin: 0 0 40px 0;
 
-      /* DER WICHTIGE TEIL: dynamische Höhe */
-      height: clamp(420px, 55vh, 680px);
+      height: 820px;          /* <<< PC / allgemein: deutlich größer */
     }
 
-    /* 📱 Mobile Optimierung */
+    /* ✅ GANZ WICHTIG: Canvas muss den Container komplett füllen */
+    #wattChart {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Mobile */
     @media (max-width: 600px) {
       body {
         padding: 14px;
@@ -155,7 +154,6 @@
         align-items: stretch;
       }
 
-      /* Topbar: Titel oben, Button darunter */
       .topbar {
         flex-direction: column;
         align-items: stretch;
@@ -189,7 +187,6 @@
       .name { font-size: 16px; }
       .value { font-size: 18px; }
 
-      /* Buttons: 2 pro Zeile, aber begrenzt */
       #chartButtons {
         justify-content: space-between;
         gap: 8px;
@@ -197,35 +194,25 @@
 
       #chartButtons button {
         flex: 1 1 calc(50% - 8px);
-        max-width: none;       /* damit 2er Raster sauber funktioniert */
-        min-width: 0;
         padding: 10px 10px;
       }
 
-      /* Mobile Chart: immer groß genug, aber nicht übertrieben */
       #wattChartContainer {
-        width: 100%;
-        max-width: 800px;
-        height: 700px;              /* <<< DAS ist der Gamechanger */
-        background: white;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        margin: 0 0 40px 0;
+        padding: 16px;
+        height: 560px;       /* <<< Mobile: auch deutlich größer */
       }
     }
 
-    /* 📱 Landscape speziell: oft mehr Höhe verfügbar -> Chart größer */
+    /* Landscape auf Phones/Tablets: extra groß */
     @media (max-width: 900px) and (orientation: landscape) {
       #wattChartContainer {
-        height: clamp(520px, 78vh, 900px);
+        height: 680px;
       }
     }
   </style>
 </head>
 
 <body>
-
   <div class="topbar">
     <h1>Analyse</h1>
     <a class="back-btn" href="index.html">Zurück zum Hauptmenü</a>
@@ -347,7 +334,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,  // ✅ wichtig: Containerhöhe wird genutzt
+          maintainAspectRatio: false,
           plugins: {
             tooltip: {
               enabled: true,
@@ -380,6 +367,5 @@
     ladeWattDaten("24h");
     ladeDurchschnittswerte();
   </script>
-
 </body>
 </html>
