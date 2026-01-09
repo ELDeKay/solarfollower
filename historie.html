@@ -6,16 +6,12 @@
   <title>Analyse</title>
 
   <style>
-    /* ✅ Kein horizontales Overflow durch padding/width */
+    /* ✅ Kein horizontales Overflow */
     *,
     *::before,
-    *::after {
-      box-sizing: border-box;
-    }
+    *::after { box-sizing: border-box; }
 
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
     body {
       font-family: Arial, sans-serif;
@@ -29,15 +25,21 @@
       align-items: center;
     }
 
+    /* ✅ Einheitliche Seitenbreite */
+    .topbar,
+    .list,
+    #chartButtons,
+    #wattChartContainer {
+      width: 100%;
+      max-width: 800px;
+    }
+
     /* ✅ Topbar: Desktop Titel exakt mittig, Button rechts */
     .topbar {
       position: relative;
       display: flex;
       align-items: center;
       margin-bottom: 30px;
-
-      width: 100%;
-      max-width: 800px;
     }
 
     .topbar h1 {
@@ -55,21 +57,17 @@
       padding: 10px 16px;
       border-radius: 10px;
       font-weight: bold;
-
       margin-left: auto;
       display: inline-block;
+      touch-action: manipulation;
     }
 
-    /* ✅ Boxen immer sauber mittig und nicht zu breit */
     .list {
-      width: 100%;
-      max-width: 800px;
-      margin: 0;
       background: white;
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      margin-bottom: 20px;
+      margin: 0 0 20px 0;
     }
 
     .row {
@@ -82,9 +80,7 @@
       min-height: 72px;
     }
 
-    .row:last-child {
-      border-bottom: none;
-    }
+    .row:last-child { border-bottom: none; }
 
     .icon {
       width: 100px;
@@ -93,7 +89,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 12px;
       color: #555;
     }
 
@@ -103,10 +98,7 @@
       object-fit: contain;
     }
 
-    .name {
-      font-size: 18px;
-      font-weight: bold;
-    }
+    .name { font-size: 18px; font-weight: bold; }
 
     .value {
       font-size: 20px;
@@ -115,15 +107,13 @@
       white-space: nowrap;
     }
 
-    /* ✅ Buttons: zentriert, aber auf Mobile umbrechbar */
+    /* ✅ Buttons: schön platziert, aber NICHT riesig */
     #chartButtons {
-      width: 100%;
-      max-width: 800px;
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 10px;
       margin: 0 0 20px 0;
-      flex-wrap: wrap;
     }
 
     #chartButtons button {
@@ -135,45 +125,37 @@
       font-weight: bold;
       cursor: pointer;
 
+      /* ✅ verhindert “Mega-Buttons” */
+      flex: 0 1 auto;
+      min-width: 92px;
+      max-width: 180px;
+
       touch-action: manipulation;
     }
 
-    #chartButtons button.active {
-      background-color: #0056b3;
-    }
+    #chartButtons button.active { background-color: #0056b3; }
 
-    /* ✅ Chart-Container: volle Breite, nicht größer als max-width */
+    /* ✅ Chart-Container: Größe über clamp + vh -> auf jedem Gerät groß genug */
     #wattChartContainer {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 0 40px 0;
       background: white;
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin: 0 0 40px 0;
+
+      /* DER WICHTIGE TEIL: dynamische Höhe */
+      height: clamp(420px, 55vh, 680px);
     }
 
-          /* 📱 Mobile Portrait */
-      @media (max-width: 600px) {
-        #wattChartContainer {
-          height: 420px;   /* vorher ~320 */
-        }
-      }
-      
-      /* 📱 Mobile Landscape */
-      @media (min-width: 601px) and (max-width: 900px) {
-        #wattChartContainer {
-          height: 500px;
-        }
-      }
-      
-      /* 🖥️ Desktop */
-      @media (min-width: 901px) {
-        #wattChartContainer {
-          height: 560px;
-        }
+    /* 📱 Mobile Optimierung */
+    @media (max-width: 600px) {
+      body {
+        padding: 14px;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom));
+        align-items: stretch;
       }
 
+      /* Topbar: Titel oben, Button darunter */
       .topbar {
         flex-direction: column;
         align-items: stretch;
@@ -195,54 +177,42 @@
         margin-left: 0;
       }
 
-      .list {
-        padding: 16px;
-      }
+      .list { padding: 16px; }
 
       .row {
-        grid-template-columns: 56px 1fr auto; /* ✅ rechte Spalte flexibel */
+        grid-template-columns: 56px 1fr auto;
         padding: 12px 0;
         min-height: 64px;
       }
 
-      .icon {
-        width: 44px;
-        height: 44px;
-      }
+      .icon { width: 44px; height: 44px; }
+      .name { font-size: 16px; }
+      .value { font-size: 18px; }
 
-      .name {
-        font-size: 16px;
-      }
-
-      .value {
-        font-size: 18px;
-      }
-
+      /* Buttons: 2 pro Zeile, aber begrenzt */
       #chartButtons {
         justify-content: space-between;
         gap: 8px;
       }
 
       #chartButtons button {
-        flex: 1 1 calc(50% - 8px); /* 2 pro Reihe */
+        flex: 1 1 calc(50% - 8px);
+        max-width: none;       /* damit 2er Raster sauber funktioniert */
+        min-width: 0;
         padding: 10px 10px;
       }
 
+      /* Mobile Chart: immer groß genug, aber nicht übertrieben */
       #wattChartContainer {
         padding: 16px;
+        height: clamp(380px, 52vh, 520px);
       }
     }
 
-    /* ✅ Optional: bessere Chart-Höhe auf kleinen Screens */
-    @media (max-width: 600px) {
+    /* 📱 Landscape speziell: oft mehr Höhe verfügbar -> Chart größer */
+    @media (max-width: 900px) and (orientation: landscape) {
       #wattChartContainer {
-        height: 320px;
-      }
-    }
-
-    @media (min-width: 601px) {
-      #wattChartContainer {
-        height: 420px;
+        height: clamp(420px, 70vh, 700px);
       }
     }
   </style>
@@ -256,39 +226,29 @@
   </div>
 
   <div class="list">
-
     <div class="row">
-      <div class="icon">
-        <img src="durchW.png" alt="Durchschnitt">
-      </div>
+      <div class="icon"><img src="durchW.png" alt="Durchschnitt"></div>
       <div class="name">Durchschnittl. Leistung</div>
       <div class="value" id="avgLive">XX,XX Watt</div>
     </div>
 
     <div class="row">
-      <div class="icon">
-        <img src="durch24h.png" alt="24h">
-      </div>
+      <div class="icon"><img src="durch24h.png" alt="24h"></div>
       <div class="name">Leistung 24h</div>
       <div class="value" id="avg24h">XX,XX Watt</div>
     </div>
 
     <div class="row">
-      <div class="icon">
-        <img src="durch7d.png" alt="7 Tage">
-      </div>
+      <div class="icon"><img src="durch7d.png" alt="7 Tage"></div>
       <div class="name">Leistung 7d</div>
       <div class="value" id="avg7d">XX,XX Watt</div>
     </div>
 
     <div class="row">
-      <div class="icon">
-        <img src="durch30d.png" alt="30 Tage">
-      </div>
+      <div class="icon"><img src="durch30d.png" alt="30 Tage"></div>
       <div class="name">Leistung 30d</div>
       <div class="value" id="avg30d">XX,XX Watt</div>
     </div>
-
   </div>
 
   <div id="chartButtons">
@@ -355,7 +315,6 @@
       const labels = daten.map(e => formatZeit(e.zeit, range));
       const wattData = daten.map(e => e.watt);
 
-      // 🔹 Aktueller Stundenwert = letzter Wert aus 24h
       if (range === "24h" && daten.length > 0) {
         const letzterWert = daten[daten.length - 1].watt;
         document.getElementById("avgLive").textContent =
@@ -382,7 +341,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false, /* ✅ damit unsere Containerhöhe wirkt */
+          maintainAspectRatio: false,  // ✅ wichtig: Containerhöhe wird genutzt
           plugins: {
             tooltip: {
               enabled: true,
