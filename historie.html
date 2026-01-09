@@ -204,15 +204,21 @@
 
       /* Mobile Chart: immer groß genug, aber nicht übertrieben */
       #wattChartContainer {
-        padding: 16px;
-        height: clamp(380px, 52vh, 520px);
+        width: 100%;
+        max-width: 800px;
+        height: 700px;              /* <<< DAS ist der Gamechanger */
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin: 0 0 40px 0;
       }
     }
 
     /* 📱 Landscape speziell: oft mehr Höhe verfügbar -> Chart größer */
     @media (max-width: 900px) and (orientation: landscape) {
       #wattChartContainer {
-        height: clamp(420px, 70vh, 700px);
+        height: clamp(520px, 78vh, 900px);
       }
     }
   </style>
